@@ -1,7 +1,7 @@
 (uiop:define-package :stumpwm-init/modeline
   (:use :cl)
   (:import-from :cpu)
-  (:import-from :hostnaem)
+  (:import-from :hostname)
   (:import-from :mem)
   (:import-from stumpwm)
   ;; ensure this file is loaded after theme.lisp because the modeline
@@ -19,6 +19,7 @@
 (declaim (type running-average
                async-mode-line-real-time
                async-mode-line-run-time))
+
 (sb-ext:defglobal async-mode-line-real-time
     (make-running-average))
 (sb-ext:defglobal async-mode-line-run-time
