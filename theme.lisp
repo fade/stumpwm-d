@@ -41,8 +41,9 @@
                          deepsky:red
                          deepsky:yellow))
 
-(when *initializing*
-  (update-color-map (current-screen)))
+(update-color-map (current-screen))
+;; (when *initializing*
+;;   (update-color-map (current-screen)))
 
 (set-fg-color deepsky:foreground)
 (set-bg-color deepsky:background)
