@@ -1,6 +1,6 @@
 (uiop:define-package :stumpwm-init/deepsky
   (:use :cl)
-  (import-from :stumpwm-init/deftheme
+  (:import-from :stumpwm-init/deftheme
                 #:deftheme))
 
 (cl:in-package :stumpwm-init/deepsky)
