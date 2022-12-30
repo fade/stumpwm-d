@@ -3,5 +3,5 @@
   (:use-reexport
    :stumpwm-init/theme
    :stumpwm-init/keybindings
-   :stumpwm-init/modeline   
-   :stumpwm-init/groups))
+   :stumpwm-init/groups
+   :stumpwm-init/modeline))
