@@ -1,6 +1,8 @@
 (uiop:define-package :stumpwm-init/groups
                      (:use :cl :stumpwm))
 
+(in-package :stumpwm-init/groups)
+
 ;;; ======================================================================
 ;;;  group definitions
 ;;; ======================================================================
