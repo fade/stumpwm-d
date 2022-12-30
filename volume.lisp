@@ -2,9 +2,9 @@
   (:use :cl :iterate)
   (:export #:adjust-volume #:set-volume #:toggle-mute #:mute #:unmute #:volume-10+ #:volume-10-)
   (:import-from :stumpwm-init/shell-command
-   #:collect-process-output-to-string #:collect-process-error-to-string)
+                #:collect-process-output-to-string #:collect-process-error-to-string)
   (:import-from :stumpwm
-   #:defcommand #:message))
+                #:defcommand #:message))
 
 (cl:in-package :stumpwm-init/volume)
 
@@ -26,6 +26,7 @@
 
 (declaim (ftype (function (string &rest string) (values string &optional))
                 run-program-return-error-or-output))
+
 (defun run-program-return-error-or-output (program &rest args)
   (let* ((process (sb-ext:run-program program args
                                       :search t
@@ -41,6 +42,7 @@
 
 (declaim (ftype (function (&rest string) (values string &optional))
                  pamixer))
+
 (defun pamixer (&rest args)
   (if *pamixer-program* 
       (apply #'run-program-return-error-or-output *pamixer-program* args)
@@ -48,6 +50,7 @@
 
 (declaim (ftype (function (&rest string) (values string &optional))
                 pulsemixer))
+
 (defun pulsemixer (&rest args)
   (if *pulsemixer-program*
       (apply #'run-program-return-error-or-output *pulsemixer-program* args)
@@ -77,10 +80,12 @@
 
 (declaim (ftype (function (unsigned-byte) (values string &optional))
                  increase-volume decrease-volume))
+
 (defun increase-volume (delta)
   (mixer-case 
     (pamixer "--increase" (prin1-to-string delta) "--allow-boost")
     (pulsemixer "--change-volume" (concatenate 'string "+" (prin1-to-string delta)))))
+
 (defun decrease-volume (delta)
   (mixer-case 
     (pamixer "--decrease" (prin1-to-string delta) "--allow-boost")

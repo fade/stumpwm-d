@@ -27,6 +27,7 @@
 
 (declaim (ftype (function (running-average double-float) (values double-float &optional))
                 record-sample))
+
 (defun record-sample (avg sample)
   (let* ((old-average (running-average-avg avg))
          (old-samples (running-average-samples avg)))
