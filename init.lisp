@@ -48,6 +48,7 @@
 			   :dont-close t)
       (setf *slynk-p* t)
       (message "Slynk server started.")))
+
 ;;; ======================================================================
 ;;  init the lisp listener.
 ;;; ======================================================================
@@ -61,15 +62,15 @@
 ;;; them. This almost always works at least 80% of the time.
 ;;; ======================================================================
 
-;; (load-module "notify")
+(load-module "notify")
 
-;; (defvar *notifications* nil)
+(defvar *notifications* nil)
 
-;; (if (and (find-package :notify) (not *notifications*))
-;;     (progn
-;;       (notify:notify-server-toggle)
-;;       (setf *notifications* t))
-;;     (message "The notify package was not loaded. It is already present."))
+(if (and (find-package :notify) (not *notifications*))
+    (progn
+      (notify:notify-server-toggle)
+      (setf *notifications* t))
+    (message "The notify package was not loaded. It is already present."))
 
 ;;; ======================================================================
 ;;;  group definitions
@@ -82,6 +83,6 @@
 ;;   (gnewbg space))
 
 ;; ;; what to do with the mouse?
-;; (setf *mouse-focus-policy* :sloppy)
+(setf *mouse-focus-policy* :sloppy)
 
 (asdf:load-system :stumpwm-init)
