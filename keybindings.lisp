@@ -9,6 +9,7 @@
    #:s-
    #:s-l
    #:bind)
+  (:import-from :stumpwm-init/personal-keys)
   (:export
    #:s-x
    #:s-e
@@ -72,7 +73,7 @@
 (windowed-app-launcher emacsclient e :command-line-args "-c"
                                      :class "Emacs")
 ;; c for chrome
-(windowed-app-launcher google-chrome c)
+;; (windowed-app-launcher google-chrome c)
 ;; t for terminal
 (windowed-app-launcher uxterm t)
 ;; r for retroarch
