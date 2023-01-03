@@ -107,3 +107,10 @@
 
 ;; bind the backgrounds command to a key in the root map.
 (define-key stumpwm:*root-map* (kbd "F9") "backgrounds")
+
+;;; ======================================================================
+;;; notification colours.
+;;; ======================================================================
+
+(setq notify:*notify-server-title-color* "^3")
+(setq notify:*notify-server-body-color* "^8")
