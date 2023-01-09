@@ -20,7 +20,7 @@ Phoebe uses the colours defined by [[https://github.com/dracula/dracula-theme][d
 clone the dracula xresources repository:
 
 #+begin_src shell
-git clone https://github.com/dracula/xresources.git~/dracula-xresources
+git clone https://github.com/dracula/xresources.git ~/dracula-xresources
 #+end_src
 
 symlink it in place:
