@@ -24,21 +24,21 @@ MY-THEME:MY-COLOR => \"#ffffff\"
 "
   (check-type theme-name symbol)
   (labels ((color-symbol-name (color)
-             (symbol-name (first color)))
+                              (symbol-name (first color)))
            (ensure-package ()
-             (uiop:ensure-package (symbol-name theme-name)
-                                  :export (mapcar #'color-symbol-name colors)))
+                           (uiop:ensure-package (symbol-name theme-name)
+                                                :export (mapcar #'color-symbol-name colors)))
            (color-symbol (color)
-             (intern (color-symbol-name color) (ensure-package)))
+                         (intern (color-symbol-name color) (ensure-package)))
            (color-value (color)
-             (second color))
+                        (second color))
            (defcolor-form (color)
-             `(defcolor ,(color-symbol color)
-                  ,(color-value color))))
-    `(progn
-       ;; i'm not sure why, but emitting a `DEFPACKAGE' form seems
-       ;; necessary, in addition to repeatedly evaluating
-       ;; `ensure-package' during macroexpansion.
-       (defpackage ,(symbol-name theme-name)
-         (:export ,@(mapcar #'color-symbol-name colors)))
-       ,@(mapcar #'defcolor-form colors))))
+                          `(defcolor ,(color-symbol color)
+                                     ,(color-value color))))
+          `(progn
+             ;; i'm not sure why, but emitting a `DEFPACKAGE' form seems
+             ;; necessary, in addition to repeatedly evaluating
+             ;; `ensure-package' during macroexpansion.
+             (defpackage ,(symbol-name theme-name)
+                         (:export ,@(mapcar #'color-symbol-name colors)))
+             ,@(mapcar #'defcolor-form colors))))
