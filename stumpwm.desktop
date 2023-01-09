@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=StumpWM
+Comment=Tiling, keyboard driven Common Lisp window manager
+TryExec=/usr/local/bin/start-stumpwm
+Exec=/usr/local/bin/start-stumpwm
+Type=Application
+
+[X-Window Manager]
+SessionManaged=true
