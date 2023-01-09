@@ -1,3 +1,49 @@
 The structure of this configuration is substantially derived from the excellent work defined in [[https://github.com/gefjon/stumpwm-init.git][Phoebe's super sexy stumpwm config]] ... it had not previously occured to me to use asdf's support for package inferred systems to organize a stump configuration, but having read Phoebe's config, I could immediately see that the effect was salubrious. This organisation should immediately reveal how to extend itself to the user. Should you have any questions, feel free to file an issue on this repository at github, and I will do my best to ameliorate the problem.
 
 Phoebe uses xsetroot to handle setting the background (wallpaper) image. In my use this is not sufficient, because I have a large collection of thematically sorted, wallpaper quality images, so I have included a small function and a command/keybind for setting the background. The image source pathing assumes that the directory $HOME/Desktop_pics/<image_directories> exists, but you can override this in theme.lisp. This hardcoding should be made configurable, but I have not done it yet. When I do, I will remove this note.
+
+* Installation
+
+#+begin_src shell
+  mkdir -p ~/common-lisp
+  git clone https://github.com/fade/stumpwm-d.git ~/common-lisp/stumpwm-d
+  mkdir -p ~/.stumpwm.d
+  ln -s ~/common-lisp/stumpwm-d/init.lisp ~/.stumpwm.d/init.lisp
+#+end_src
+
+** theme
+
+Phoebe uses the colours defined by [[https://github.com/dracula/dracula-theme][dracula]]. My own relationship to colour is unique to my capacity to perceive it, and while I have my own specific preferences as you can see in theme.lisp, where a choice was ambiguous or unknowable (by me) I have followed the choice made upstream. In this case I'm also using the dracula Xresoures for colours, which are better than the defaults.
+
+*** setting .Xresources
+
+clone the dracula xresources repository:
+
+#+begin_src shell
+git clone https://github.com/dracula/xresources.git~/dracula-xresources
+#+end_src
+
+symlink it in place:
+
+#+begin_src shell
+  ln -s ~/dracula-xresources/Xresources ~/.Xresources
+#+end_src
+
+load it into your current session:
+
+#+begin_src shell
+  xrdb -load ~/.Xresources
+#+end_src
+
+when that works, you can put it in your userinit, either like:
+
+#+begin_src lisp
+  (stumpwm:run-shell-command "xrdb -load ~/.Xresources")
+#+end_src
+
+or you can (as I do) start stumpwm from a shell script which for me
+handles low level X initialization for multiple heads and window
+manager compositing. I have included my script in this
+repository =start_tumpwm.sh= , but it will require you to edit it to
+match your own system, if only because your heads are not likely to be
+numbered the same as mine.
