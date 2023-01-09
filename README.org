@@ -46,4 +46,16 @@ handles low level X initialization for multiple heads and window
 manager compositing. I have included my script in this
 repository =start_tumpwm.sh= , but it will require you to edit it to
 match your own system, if only because your heads are not likely to be
-numbered the same as mine.
+numbered the same as mine. I rely upon several programs and
+services provided by the KDE software distribution, so I call kdeinit5
+here to set up various plumbing resources required by that
+environment. I also use a Corsair K-95 keyboard, the lighting and
+mapping for which are handled by an external application called
+ckb-next. Unless you also have one of these keyboards, you will want
+to kill the call that starts this process. This keyboard, which has
+along the left side a column of 'extra' macro keys, allows me to remap
+several keys, the most important of which is 'G4' which I have mapped
+to a left Super. This is reflected in the heavy use of Super in the
+keybindings defined in this configuration. This is a possible reason
+for you to rethink how all of those Super maps are defined on your system.
+
