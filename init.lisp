@@ -1,7 +1,8 @@
 (cl:in-package :stumpwm)
 
-(setf *debug-level* 3)
-(redirect-all-output (data-dir-file "debug-output" "txt"))
+;;; to debug this init system, uncomment the following two lines.
+;; (setf *debug-level* 3)
+;; (redirect-all-output (data-dir-file "debug-output" "txt"))
 
 ;;; ======================================================================
 ;;; if quicklisp isn't loaded, load it.
