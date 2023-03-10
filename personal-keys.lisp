@@ -29,6 +29,6 @@
 
 
 ;; c for light/fast terminal
-(windowed-app-launcher kitty c)
+(windowed-app-launcher alacritty c)
 ;; C for reliable URL recog (konsole)
 (windowed-app-launcher konsole o)
