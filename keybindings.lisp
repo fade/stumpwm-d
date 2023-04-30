@@ -91,6 +91,7 @@
 (s-x "2" "vsplit")
 (s-x "3" "hsplit")
 
+;; these emacsclient aliases don't exist in this config.
 ;;; s-e
 (s-e "c" "emacsclient-create-window")
 (s-e ";" "emacsclient-eval")
