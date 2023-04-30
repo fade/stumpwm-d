@@ -1,13 +1,14 @@
 (uiop:define-package :stumpwm-init/keybinding-macros
   (:use :iterate :cl)
   (:import-from :stumpwm
-   #:defcommand #:kbd)
+                #:defcommand #:kbd)
   (:export
    #:bind
    #:s-
    #:s-l
    #:super-key-maps
    #:windowed-app-launcher))
+
 (cl:in-package :stumpwm-init/keybinding-macros)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)

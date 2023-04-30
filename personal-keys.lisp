@@ -25,7 +25,7 @@
 (windowed-app-launcher firefox f)
 
 ;; m for music
-(windowed-app-launcher clementine m)
+;; (windowed-app-launcher clementine m)
 
 
 ;; c for light/fast terminal
