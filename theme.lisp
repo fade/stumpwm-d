@@ -53,14 +53,15 @@
 
 (set-fg-color deepsky:foreground)
 (set-bg-color deepsky:background)
-(set-border-color deepsky:current-line)
+;; (set-border-color deepsky:current-line)
+(set-border-color deepsky:orange)
 
 (defparameter *mode-line-foreground-color* deepsky:foreground)
 (defparameter *mode-line-background-color* deepsky:background)
 (defparameter *mode-line-border-color* deepsky:current-line)
 
 (defun set-theme ()
-    ;;; message and input bar colors
+  ;;; message and input bar colors
   ;; `stumppwm:set-fg-color' controls the text in the message and input bar
   (set-fg-color deepsky:foreground)
   ;; `stumpwm:set-bg-color' controls the background in the message and input bar
@@ -70,8 +71,8 @@
 
   ;;; window borders
   ;; `stumpwm:set-focus-color applies to the border of the focused window
-  (set-focus-color deepsky:comment)
-  ;; `wtumpwm:set-unfocus-color applies to the border of non-fucused windows
+  (set-focus-color deepsky:cloudless-day)
+  ;; `wtumpwm:set-unfocus-color applies to the border of non-focused windows
   (set-unfocus-color deepsky:background)
 
   (dolist (screen stumpwm:*screen-list*)
