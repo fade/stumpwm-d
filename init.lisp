@@ -43,12 +43,12 @@
 
 (if *slynk-p*
     (message "Slynk server is already running.")
-    (progn
-      (slynk:create-server :port 4006
-			   :style slynk:*communication-style*
-			   :dont-close t)
-      (setf *slynk-p* t)
-      (message "Slynk server started.")))
+  (progn
+    (slynk:create-server :port 4007
+			 :style slynk:*communication-style*
+			 :dont-close t)
+    (setf *slynk-p* t)
+    (message "Slynk server started.")))
 
 ;;; ======================================================================
 ;;  init the lisp listener.

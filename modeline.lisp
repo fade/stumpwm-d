@@ -42,6 +42,7 @@
 
 (declaim (ftype (function (fixnum) (values double-float &optional))
                 internal-time-ms))
+
 (defun internal-time-ms (internal-time)
   (/ (* internal-time 1000d0)
      internal-time-units-per-second))
@@ -141,7 +142,6 @@
 
 (defparameter stumpwm:*screen-mode-line-format*
   (format nil "~a | %M | %C | %d | %g | %a | %v" *hostname*)
-  ;; (format nil "~a | %B | %C | %d | %g | %a | %v" *hostname*)
   "left to right, these are:
    memoized hostname, provided by `hostname'
    %M memory usage (supplied by `mem') (reads procfs)

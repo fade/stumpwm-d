@@ -89,7 +89,7 @@
 ;;; stumpwm aesthetic configuration.
 ;;; ======================================================================
 
-(defparameter *background-images* (list "$HOME/Desktop_pics/dpool/" "$HOME/Desktop_pics/Cityscapes/*") ;; "$HOME/Desktop_pics/Desktop_Images_Night_City/"
+(defparameter *background-images* (list "$HOME/Desktop_pics/Sinead/" "$HOME/Desktop_pics/dpool/" "$HOME/Desktop_pics/Cityscapes/*") ;; "$HOME/Desktop_pics/Desktop_Images_Night_City/"
   "Directory containing desktop wallpapers.")
 
 (defparameter *desktop-background-command* (format nil "feh --randomize --bg-scale ~{~A~^ ~}" *background-images*)
