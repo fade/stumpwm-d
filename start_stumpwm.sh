@@ -73,15 +73,14 @@ sleep 1
 # - window-strut "none" means windows are allowed to cover the tray. In
 #   other words, trust xmonad to handle this part.
 #
-# stalonetray 
-# --icon-gravity E \
-# --geometry 9x1-0+0 \
-# --max-geometry 9x1-0+0 \
-# --background '#1f1f1f' \
-# --skip-taskbar \
-# --icon-size 24 \
-# --kludges force_icons_size \
-# &
+# stalonetray --icon-gravity E \
+#             --geometry 9x1-0+0 \
+#             --max-geometry 9x1-0+0 \
+#             --background '#1f1f1f' \
+#             --skip-taskbar \
+#             --icon-size 24 \
+#             --kludges force_icons_size \
+#     &
 
 
 

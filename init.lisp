@@ -21,8 +21,6 @@
 (asdf:load-system "str")
 (asdf:load-system "cl-mount-info")
 
-;; (asdf:load-system :stumpwm-init)
-
 ;;; ======================================================================
 ;;; Start a slynk server so we can modify stump as it runs, from emacs
 ;;; ======================================================================
