@@ -22,7 +22,7 @@
 ;; b for browser
 (windowed-app-launcher nyxt b)
 ;; f for real browser
-(windowed-app-launcher firefox f)
+;; (windowed-app-launcher firefox f)
 
 ;; m for music
 ;; (windowed-app-launcher clementine m)

@@ -20,7 +20,7 @@ xrdb -merge .Xresources
 # transparency support.
 
 # compositing for various transparency effects. picom supersedes compton.
-picom &
+# picom &
 
 #=============================================================================
 # SCREEN CONFIGURATION

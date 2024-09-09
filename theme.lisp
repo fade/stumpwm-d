@@ -2,7 +2,6 @@
   (:use :cl)
   (:import-from :stumpwm-init/deepsky)
   (:import-from :stumpwm
-                ;; #:*colors*
                 #:kbd
                 #:define-key
                 #:defcommand
