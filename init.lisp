@@ -75,7 +75,7 @@
 ;;; Let's see if we can solve the screenshotting issue for once and all.
 ;;; ======================================================================
 
-(load-module "screenshot")
+(load-module "screenshot)"
 
 ;;; ======================================================================
 ;;;  group definitions

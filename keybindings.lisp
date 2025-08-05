@@ -57,6 +57,7 @@
 ;; these bindings mimic emacs' M-: (eval) and M-! (run-shell-command).
 (s- ":" "eval")
 (s- "!" "exec")
+(s- "F12" "screenshot")
 
 ;;; s-l
 ;; a for alsamixer

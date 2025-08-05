@@ -16,6 +16,7 @@
                 #:*mode-line-background-color*
                 #:*mode-line-border-color*
                 #:run-shell-command)
+  (:import-from :notify)
   (:export #:*desktop-background-command*
            #:*background-images*
            #:backgrounds))
@@ -112,5 +113,5 @@
 ;;; notification colours.
 ;;; ======================================================================
 
-(setq notify:*notify-server-title-color* "^3")
-(setq notify:*notify-server-body-color* "^8")
+;; (setq notify:*notify-server-title-color* "^3")
+;; (setq notify:*notify-server-body-color* "^8")
