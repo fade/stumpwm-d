@@ -88,20 +88,20 @@ sleep 1
 # when using gnome applications which expect access to the keyring, such
 # as Empathy. This prevents prompts you may otherwise get for invalid
 # certificates and the like.
-gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh
+# gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh
 
 
 # Synaptics
 # syndaemon -i 1 -t &
 
 # Corsair K-95
-ckb-next &
+# ckb-next &
 
 #Plz low screen brightness
 # xbacklight -set 50
 
 # KDE apps need a bunch of underlying plumbing. kdeinit5 is the minimum.
-/usr/bin/kdeinit5 &
+# /usr/bin/kdeinit5 &
 
 # Now, finally, start stumpWM
 exec /usr/local/bin/stumpwm

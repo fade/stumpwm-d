@@ -29,6 +29,8 @@
 
 
 ;; c for light/fast terminal
-(windowed-app-launcher alacritty c)
+(windowed-app-launcher kitty c)
+;; t for faster than your average rabbit terminal.
+(windowed-app-launcher ghostty t)
 ;; C for reliable URL recog (konsole)
 (windowed-app-launcher konsole o)

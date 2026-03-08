@@ -5,3 +5,4 @@
   :author "Brian O'Reilly <fade@deepsky.com>"
   :license "MIT"
   :depends-on (:stumpwm-init/package))
+               
