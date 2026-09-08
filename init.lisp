@@ -4,6 +4,11 @@
 ;; (setf *debug-level* 3)
 ;; (redirect-all-output (data-dir-file "debug-output" "txt"))
 
+;; some programs want to know what WM they are running inside. xprop
+;; doesn't seem to return the information in stumpwm.
+
+(setf (getenv "IN_STUMPWM") "yes")
+
 ;;; ======================================================================
 ;;; if quicklisp isn't loaded, load it.
 ;;; ======================================================================
