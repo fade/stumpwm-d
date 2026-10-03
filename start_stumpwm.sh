@@ -129,8 +129,40 @@ fi
 #Plz low screen brightness
 # xbacklight -set 50
 
-# KDE apps need a bunch of underlying plumbing. kdeinit5 is the minimum.
-# /usr/bin/kdeinit5 &
+#=============================================================================
+# KDE APPLICATION SUPPORT
+#=============================================================================
+
+# KDE applications run well outside Plasma once they can find the
+# services Plasma would otherwise provide. KDE 6 dropped kdeinit, and
+# nothing replaces it: applications start their helpers themselves and
+# D-Bus starts KDE's daemons on demand. What is left is telling them
+# they are on KDE and starting the few helpers Plasma's autostart would.
+
+if command -v kbuildsycoca6 >/dev/null; then
+    # Use the KDE look, file dialogs, desktop portal and application
+    # menu, so "Open With" lists your applications.
+    export XDG_CURRENT_DESKTOP=KDE
+    export KDE_SESSION_VERSION=6
+    export XDG_MENU_PREFIX=plasma-
+
+    # A Plasma Wayland session can leave its settings behind in the
+    # systemd user manager. Without this, applications that D-Bus or
+    # systemd starts would look for a Wayland display that is gone.
+    systemctl --user unset-environment WAYLAND_DISPLAY KDE_FULL_SESSION         KDE_APPLICATIONS_AS_SCOPE QT_WAYLAND_RECONNECT
+    dbus-update-activation-environment --systemd DISPLAY XAUTHORITY         XDG_CURRENT_DESKTOP KDE_SESSION_VERSION XDG_MENU_PREFIX XDG_SESSION_TYPE
+
+    # Refresh KDE's record of installed applications and file types.
+    kbuildsycoca6 >/dev/null 2>&1 &
+
+    # Unlock the wallet with the login password, so applications do not
+    # ask for it again.
+    [ -x /usr/lib/pam_kwallet_init ] && /usr/lib/pam_kwallet_init &
+
+    # Let applications ask for an administrator password when they need
+    # one, as System Settings and Partition Manager do.
+    systemctl --user start plasma-polkit-agent.service
+fi
 
 # Now, finally, start stumpWM
 exec /usr/local/bin/stumpwm
