@@ -26,6 +26,7 @@ will do my best to ameliorate the problem.
 - [[#mode-line][Mode line]]
 - [[#theme][Theme]]
 - [[#volume][Volume]]
+- [[#notifications][Notifications]]
 - [[#live-development-with-slynk][Live development with Slynk]]
 - [[#one-configuration-several-machines][One configuration, several machines]]
 - [[#adapting-it-to-your-machine][Adapting it to your machine]]
@@ -133,8 +134,8 @@ than from a login screen.
    start script looks like a missing session.
 2. =start-stumpwm= (installed from =start_stumpwm.sh=) merges
    =~/.Xresources=, starts =picom=, arranges the monitors for the
-   machine it is on, adjusts a laptop's built-in keyboard, and then
-   replaces itself with StumpWM.
+   machine it is on, adjusts a laptop's built-in keyboard, prepares the
+   session for KDE applications, and then replaces itself with StumpWM.
 3. StumpWM loads =~/.stumpwm.d/init.lisp=, which is this repository's
    =init.lisp=.
 4. =init.lisp= loads the supporting libraries, starts a Slynk server,
@@ -373,6 +374,27 @@ The mixer launchers (=s-l a= for alsamixer, =s-l p= for pavucontrol)
 also work with PipeWire, through its ALSA and PulseAudio compatibility
 layers.
 
+* Notifications
+
+StumpWM is the desktop's notification server. Applications, KDE's
+among them, send notifications to whatever owns
+=org.freedesktop.Notifications=, and outside Plasma nothing else does,
+so without this they would be silently dropped. I use the =notify=
+module from stumpwm-contrib, and each notification appears in the
+message bar for 15 seconds. Ordinary StumpWM messages keep their usual,
+shorter timeout.
+
+To change how long notifications stay up, set =*notification-seconds*=
+in =theme.lisp=; the title and body colours are set beside it. Try it
+with:
+
+#+begin_src shell
+  notify-send 'Hello' 'This is a test notification.'
+#+end_src
+
+A message StumpWM shows while a notification is up, such as a volume
+change, replaces it.
+
 * Live development with Slynk
 
 =init.lisp= starts a Slynk server on port 4007 inside the window
@@ -421,8 +443,13 @@ it is useful anywhere else:
   programmable desktop keyboard makes in hardware. Only the built-in
   keyboard is changed, found by the name in =LAPTOP_KEYBOARD=; run
   =xinput list= to find yours, or empty the variable to skip this.
-- The commented sections cover a system tray, the GNOME keyring, a
-  touchpad and KDE plumbing. Uncomment the ones you need.
+- When KDE 6 is installed, it sets the session up so KDE applications
+  behave as they do in Plasma: the KDE look and file dialogs, a full
+  "Open With" menu, the wallet unlocked by your login, and a prompt
+  when an application needs an administrator password. KDE 6 has no
+  kdeinit, and nothing needs to replace it.
+- The commented sections cover a system tray, the GNOME keyring and a
+  touchpad. Uncomment the ones you need.
 
 Run =make install-session= after editing it.
 
