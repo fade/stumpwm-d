@@ -169,7 +169,6 @@ first.
 | =brightness.lisp=        | screen brightness commands for laptops                                |
 | =host.lisp=              | which machine this is, and loading its host file                      |
 | =hosts/<name>.lisp=      | what only that machine needs                                          |
-| =shell-command.lisp=     | helpers for reading a program's output (nothing uses them now)        |
 | =start_stumpwm.sh=       | the X session script                                                  |
 | =stumpwm.desktop=        | the login screen's session entry                                      |
 | =modules=                | a link to stumpwm-contrib                                             |
