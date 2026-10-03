@@ -4,4 +4,5 @@
    :stumpwm-init/theme
    :stumpwm-init/keybindings
    :stumpwm-init/groups
-   :stumpwm-init/modeline))
+   :stumpwm-init/modeline)
+  (:import-from :stumpwm-init/host))

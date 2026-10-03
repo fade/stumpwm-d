@@ -95,4 +95,16 @@
 ;; ;; what to do with the mouse?
 (setf *mouse-focus-policy* :sloppy)
 
+;;; ======================================================================
+;;; Another checkout of a system named stumpwm-init sits in the source
+;;; registry, so load this file's own .asd first. That way the config
+;;; always loads itself, whichever copy the registry would find.
+;;; ======================================================================
+
+(when *load-truename*
+  (asdf:load-asd (merge-pathnames "stumpwm-init.asd" *load-truename*)))
+
 (asdf:load-system :stumpwm-init)
+
+;;; Apply whatever only this machine needs, from hosts/<host>.lisp.
+(uiop:symbol-call :stumpwm-init/host :load-host-configuration)

@@ -99,11 +99,7 @@
 (s-e "s" "emacs-status")
 
 ;;; multimedia keys
-(bind "XF86MonBrightnessUp" "brightness-5%+")
-(bind "S-XF86MonBrightnessUp" "brightness-1%+")
-(bind "XF86MonBrightnessDown" "brightness-5%-")
-(bind "S-XF86MonBrightnessDown" "brightness-1%-")
-
 (bind "XF86AudioRaiseVolume" "volume-10+")
 (bind "XF86AudioLowerVolume" "volume-10-")
 (bind "XF86AudioMute" "toggle-mute")
+(bind "XF86AudioMicMute" "toggle-mic-mute")
