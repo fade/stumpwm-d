@@ -113,5 +113,23 @@
 ;;; notification colours.
 ;;; ======================================================================
 
-;; (setq notify:*notify-server-title-color* "^3")
-;; (setq notify:*notify-server-body-color* "^8")
+;; The module's default body colour is ^0, which is the deepsky
+;; background colour and so the message window's own background:
+;; notification bodies would be invisible. Draw titles in ^3 and bodies
+;; in ^8 instead.
+(setf notify:*notify-server-title-color* "^3"
+      notify:*notify-server-body-color* "^8")
+
+(defparameter *notification-seconds* 15
+  "How many seconds a desktop notification stays on screen. Ordinary
+StumpWM messages keep their own, shorter timeout.")
+
+(defun show-notification-longer (app icon summary body)
+  "Show a desktop notification for *NOTIFICATION-SECONDS*. A
+notification always spans several lines, so both the single and the
+multi line message timeouts are rebound, and only for this message."
+  (let ((stumpwm:*timeout-wait* *notification-seconds*)
+        (stumpwm:*timeout-wait-multiline* *notification-seconds*))
+    (notify::show-notification app icon summary body)))
+
+(setf notify:*notification-received-hook* '(show-notification-longer))

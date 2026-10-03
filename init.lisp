@@ -62,21 +62,6 @@
 
 
 ;;; ======================================================================
-;;; too many things use notifications for core functionality to ignore
-;;; them. This almost always works at least 80% of the time.
-;;; ======================================================================
-
-;; (load-module "notify")
-
-;; (defvar *notifications* nil)
-
-;; (if (and (find-package :notify) (not *notifications*))
-;;     (progn
-;;       (notify:notify-server-toggle)
-;;       (setf *notifications* t))
-;;     (message "The notify package was not loaded. It is already present."))
-
-;;; ======================================================================
 ;;; Let's see if we can solve the screenshotting issue for once and all.
 ;;; ======================================================================
 
@@ -108,3 +93,14 @@
 
 ;;; Apply whatever only this machine needs, from hosts/<host>.lisp.
 (uiop:symbol-call :stumpwm-init/host :load-host-configuration)
+
+;;; ======================================================================
+;;; Too many things use notifications for core functionality to ignore
+;;; them. KDE and other applications send their notifications to
+;;; whatever owns org.freedesktop.Notifications on the session bus, and
+;;; outside Plasma nothing else claims that name, so StumpWM takes it.
+;;; The theme loads the notify module; starting the server is safe to
+;;; repeat, so reloading this file leaves a running server alone.
+;;; ======================================================================
+
+(uiop:symbol-call :notify :notify-server-on)
