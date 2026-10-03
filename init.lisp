@@ -22,6 +22,25 @@
 
 ;; (use-package :ql)
 
+;;; ======================================================================
+;;  freeze the libraries the StumpWM image was built with.
+;;; ======================================================================
+
+;; the libraries compiled into the image should never be reloaded from
+;; disk, but the upstream image build freezes only StumpWM's direct
+;; dependencies. their own dependencies (babel, cffi, bordeaux-threads
+;; and friends) stay visible to ASDF, which recompiles and reloads them
+;; over the running copies as soon as anything below asks for them. I
+;; freeze everything already loaded, once, at login. a later reload of
+;; this file must not freeze the systems loaded since then, or reloading
+;; the configuration stops working.
+
+(defvar *image-systems-frozen-p* nil)
+
+(unless *image-systems-frozen-p*
+  (mapc #'asdf:register-immutable-system (asdf:already-loaded-systems))
+  (setf *image-systems-frozen-p* t))
+
 ;; common lisp string processing lib.
 (asdf:load-system "str")
 (asdf:load-system "cl-mount-info")
