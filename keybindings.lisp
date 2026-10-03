@@ -3,6 +3,7 @@
   (:import-from :stumpwm
    #:set-prefix-key #:kbd)
   (:import-from :stumpwm-init/volume)
+  (:import-from :stumpwm-init/emacs)
   (:import-from :stumpwm-init/keybinding-macros
    #:super-key-maps
    #:windowed-app-launcher
@@ -91,7 +92,6 @@
 (s-x "2" "vsplit")
 (s-x "3" "hsplit")
 
-;; these emacsclient aliases don't exist in this config.
 ;;; s-e
 (s-e "c" "emacsclient-create-window")
 (s-e ";" "emacsclient-eval")
