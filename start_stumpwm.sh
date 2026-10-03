@@ -60,6 +60,9 @@ esac
 #
 # With the swap, the [ and ] keys type ( and ), shifted 9 and 0 type
 # [ and ], and the braces stay where they were.
+#
+# Caps Lock is always Control, so Ctrl+Shift shortcuts work with either
+# Shift key, and pressing both Shift keys together toggles Caps Lock.
 
 LAPTOP_KEYBOARD="AT Translated Set 2 keyboard"
 
@@ -75,7 +78,7 @@ xkb_symbols "parens" {
     key <AD12> { [ parenright, braceright   ] };
 };
 EOF
-    setxkbmap -device "$laptop_keyboard_id" -option "" -option ctrl:nocaps -print \
+    setxkbmap -device "$laptop_keyboard_id" -option "" -option ctrl:nocaps -option shift:both_capslock -print \
         | sed '/xkb_symbols/s/"\([^"]*\)"/"\1+lisp(parens)"/' \
         | xkbcomp -w 0 -I"$xkb_dir" -i "$laptop_keyboard_id" - "$DISPLAY"
     rm -rf "$xkb_dir"

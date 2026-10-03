@@ -457,6 +457,7 @@ it is useful anywhere else:
   programmable desktop keyboard makes in hardware. Only the built-in
   keyboard is changed, found by the name in =LAPTOP_KEYBOARD=; run
   =xinput list= to find yours, or empty the variable to skip this.
+  Pressing both Shift keys together toggles Caps Lock.
 - When KDE 6 is installed, it sets the session up so KDE applications
   behave as they do in Plasma: the KDE look and file dialogs, a full
   "Open With" menu, the wallet unlocked by your login, and a prompt
