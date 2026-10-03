@@ -1,61 +1,448 @@
-The structure of this configuration is substantially derived from the excellent work defined in [[https://github.com/gefjon/stumpwm-init.git][Phoebe's super sexy stumpwm config]] ... it had not previously occured to me to use asdf's support for package inferred systems to organize a stump configuration, but having read Phoebe's config, I could immediately see that the effect was salubrious. This organisation should immediately reveal how to extend itself to the user. Should you have any questions, feel free to file an issue on this repository at github, and I will do my best to ameliorate the problem.
+#+title: fade's StumpWM configuration
 
-Phoebe uses xsetroot to handle setting the background (wallpaper) image. In my use this is not sufficient, because I have a large collection of thematically sorted, wallpaper quality images, so I have included a small function and a command/keybind for setting the background. The image source pathing assumes that the directory ==$HOME/Desktop_pics/<image_directories>== exists, but you can override this in =theme.lisp=. This hardcoding should be made configurable, but I have not done it yet. When I do, I will remove this note.
+StumpWM has been my primary interface for many years. This repository
+holds my configuration for it, along with a =Makefile= that builds
+StumpWM from source and wires the configuration into the login screen.
+
+The structure is substantially derived from the excellent work in
+[[https://github.com/gefjon/stumpwm-init.git][Phoebe's super sexy stumpwm config]]. It had not previously occurred to
+me to use ASDF's support for package-inferred systems to organise a
+StumpWM configuration, but having read Phoebe's config, I could
+immediately see that the effect was salubrious. Each concern lives in
+its own file and its own package, so extending the configuration means
+adding a file and importing it from the place that needs it.
+
+Should you have any questions, file an issue on this repository and I
+will do my best to ameliorate the problem.
+
+* Contents
+- [[#requirements][Requirements]]
+- [[#installation][Installation]]
+- [[#the-makefile][The Makefile]]
+- [[#how-a-session-starts][How a session starts]]
+- [[#layout-of-the-configuration][Layout of the configuration]]
+- [[#keybindings][Keybindings]]
+- [[#groups][Groups]]
+- [[#mode-line][Mode line]]
+- [[#theme][Theme]]
+- [[#volume][Volume]]
+- [[#live-development-with-slynk][Live development with Slynk]]
+- [[#one-configuration-several-machines][One configuration, several machines]]
+- [[#adapting-it-to-your-machine][Adapting it to your machine]]
+- [[#known-gaps][Known gaps]]
+- [[#debugging-a-session-that-will-not-start][Debugging a session that will not start]]
+
+* Requirements
+
+StumpWM is an X11 window manager. It cannot run as a Wayland session,
+so on a distribution that defaults to Wayland you choose the StumpWM
+session at the login screen in place of the Wayland desktop.
+
+You need:
+
+- SBCL, built and installed where the =Makefile= expects it
+  (=/usr/local/bin/sbcl= by default).
+- Quicklisp, loaded from =~/.sbclrc=. StumpWM is built with your init
+  file in effect, so Quicklisp is part of the resulting image.
+- The Lisp libraries the configuration loads: =str=, =cl-mount-info=,
+  =slynk= and =iterate=, all available from Quicklisp.
+- A checkout of [[https://github.com/stumpwm/stumpwm][StumpWM]] and of [[https://github.com/stumpwm/stumpwm-contrib][stumpwm-contrib]] side by side in
+  =$LISP_WORKSPACE=, which must be visible to ASDF's source registry.
+- autoconf and makeinfo, to build StumpWM and its manual.
+- An X server (=xorg-server=), =xrandr= and =xrdb=.
+- PipeWire with WirePlumber for sound. The volume keys use =wpctl=,
+  which comes with WirePlumber. PulseAudio itself is not needed.
+
+The programs the configuration launches are optional; a missing one
+only means its key does nothing useful. They are =feh= (wallpaper),
+=picom= (compositing), =uxterm=,
+=alsamixer=, =pavucontrol=, =nmtui=, =firefox=, =thunderbird=,
+=emacsclient=, =retroarch=, =nyxt=, =kitty=, =ghostty= and =konsole=.
 
 * Installation
 
 #+begin_src shell
-  mkdir -p ~/common-lisp
-  git clone https://github.com/fade/stumpwm-d.git ~/common-lisp/stumpwm-d
-  mkdir -p ~/.stumpwm.d
-  ln -s ~/common-lisp/stumpwm-d/init.lisp ~/.stumpwm.d/init.lisp
+  cd $LISP_WORKSPACE
+  git clone https://github.com/stumpwm/stumpwm.git
+  git clone https://github.com/stumpwm/stumpwm-contrib.git
+  git clone https://github.com/fade/stumpwm-d.git fade-stumpwm-init
+  cd fade-stumpwm-init
+  make             # build StumpWM in its checkout
+  make install     # install it, link this config, install the session
+  make check       # confirm everything is in place
 #+end_src
 
-** theme
+=make install= asks for your sudo password, because the binary, the
+start script and the session file live in system directories. Then log
+out and pick *StumpWM* from the session menu on the login screen.
 
-Phoebe uses the colours defined by [[https://github.com/dracula/dracula-theme][dracula]]. My own relationship to colour is unique to my capacity to perceive it, and while I have my own specific preferences as you can see in theme.lisp, where a choice was ambiguous or unknowable (by me) I have followed the choice made upstream. In this case I'm also using the dracula Xresoures for colours, which are better than the defaults.
+* The Makefile
 
-*** setting .Xresources
+| target                 | what you get                                                                |
+|------------------------+-----------------------------------------------------------------------------|
+| =make= / =make build=  | a fresh =stumpwm= binary in the StumpWM checkout                            |
+| =make install=         | everything below, in order                                                  |
+| =make install-stumpwm= | the binary and the info manual installed under =PREFIX=                     |
+| =make link=            | =~/.stumpwm.d/init.lisp= and =~/.stumpwm.d/modules= pointing at the sources |
+| =make install-session= | =start-stumpwm= and the login screen's session entry installed              |
+| =make check=           | a report of what is installed and what is out of date                       |
+| =make clean=           | a clean StumpWM checkout                                                    |
 
-clone the dracula xresources repository:
+A second =make= after a successful build does nothing. The build
+reconfigures StumpWM only when its build inputs change, and recompiles
+only when its sources do.
+
+=make link= will not replace a real file or directory in
+=~/.stumpwm.d=. If it refuses, move the file aside yourself and run it
+again.
+
+The start script is installed as a copy, not a link, so the login
+screen never depends on anything in your home directory. After you edit
+=start_stumpwm.sh=, run =make install-session= again. =make check=
+fails until you do, so a stale copy is easy to spot.
+
+Every location can be overridden on the command line:
+
+| variable         | default                                  |
+|------------------+------------------------------------------|
+| =LISP_WORKSPACE= | =~/SourceCode/lisp=                      |
+| =STUMPWM_SRC=    | =$LISP_WORKSPACE/stumpwm=                |
+| =CONTRIB_DIR=    | =$LISP_WORKSPACE/stumpwm-contrib=        |
+| =PREFIX=         | =/usr/local=                             |
+| =BINDIR=         | =$PREFIX/bin=                            |
+| =SBCL=           | =$BINDIR/sbcl=                           |
+| =XSESSIONS_DIR=  | =/usr/share/xsessions=                   |
+| =STUMPWM_D=      | =~/.stumpwm.d=                           |
+| =SUDO=           | =sudo= (set it empty to install as you)  |
+
+For example, to install everything under your home directory without
+sudo:
 
 #+begin_src shell
-git clone https://github.com/dracula/xresources.git ~/dracula-xresources
+  make install PREFIX=$HOME/.local XSESSIONS_DIR=$HOME/.local/share/xsessions SUDO=
 #+end_src
 
-symlink it in place:
+Most login managers only read session files from the system
+directories, so that layout suits running StumpWM from =startx= more
+than from a login screen.
+
+* How a session starts
+
+1. The login screen lists *StumpWM* from =stumpwm.desktop=. It hides
+   the entry unless =/usr/local/bin/start-stumpwm= exists, so a missing
+   start script looks like a missing session.
+2. =start-stumpwm= (installed from =start_stumpwm.sh=) merges
+   =~/.Xresources=, starts =picom=, arranges the monitors for the
+   machine it is on, adjusts a laptop's built-in keyboard, and then
+   replaces itself with StumpWM.
+3. StumpWM loads =~/.stumpwm.d/init.lisp=, which is this repository's
+   =init.lisp=.
+4. =init.lisp= loads the supporting libraries, starts a Slynk server,
+   loads the =screenshot= module, and then loads the =stumpwm-init=
+   system, which pulls in every other file.
+5. Last, =init.lisp= loads the file for this machine from =hosts/=, if
+   there is one (see [[#one-configuration-several-machines][One configuration, several machines]]).
+
+=init.lisp= loads this repository's own =stumpwm-init.asd= before
+loading the system. I did that because an older checkout of a system
+with the same name sits in my source registry, and I want the
+configuration to load itself rather than whichever copy ASDF finds
+first.
+
+* Layout of the configuration
+
+| file                     | what it provides                                                      |
+|--------------------------+-----------------------------------------------------------------------|
+| =init.lisp=              | the entry point StumpWM loads at startup                              |
+| =stumpwm-init.asd=       | the system definition                                                 |
+| =package.lisp=           | the top of the system; re-exports the theme, keys, groups, mode line  |
+| =deftheme.lisp=          | the =deftheme= macro, which turns a palette into a package of colours |
+| =deepsky.lisp=           | my palette, defined with =deftheme=                                   |
+| =theme.lisp=             | colours, window borders and wallpaper                                 |
+| =keybinding-macros.lisp= | the small language the key definitions are written in                |
+| =keybindings.lisp=       | the general keybindings                                               |
+| =personal-keys.lisp=     | launcher keys for the programs I use day to day                       |
+| =groups.lisp=            | the named groups created at startup                                   |
+| =modeline.lisp=          | a mode line on every head, redrawn continuously                       |
+| =volume.lisp=            | volume and microphone commands for PipeWire                           |
+| =brightness.lisp=        | screen brightness commands for laptops                                |
+| =host.lisp=              | which machine this is, and loading its host file                      |
+| =hosts/<name>.lisp=      | what only that machine needs                                          |
+| =shell-command.lisp=     | helpers for reading a program's output (nothing uses them now)        |
+| =start_stumpwm.sh=       | the X session script                                                  |
+| =stumpwm.desktop=        | the login screen's session entry                                      |
+| =modules=                | a link to stumpwm-contrib                                             |
+
+To add something, write a new file whose package is named
+=stumpwm-init/<file-name>=, and import that package from =package.lisp=
+or from the file that depends on it. ASDF works out the load order from
+the imports, so there is no file list to maintain.
+
+* Keybindings
+
+The prefix key is =C-'= (StumpWM's default is =C-t=). Most of my
+everyday bindings skip the prefix and use the Super key instead. If
+Super is awkward on your keyboard, reconsider these before adopting
+them.
+
+** Directly on Super
+
+| key            | command                                   |
+|----------------+-------------------------------------------|
+| =s-n= / =s-p=  | next / previous group                     |
+| =s-N= / =s-P=  | next / previous group, taking the window  |
+| =s-f= / =s-b=  | next / previous frame                     |
+| =s-F= / =s-B=  | move the window to the next / previous frame |
+| =s-TAB=        | next hidden window in this frame          |
+| =s-S-TAB=      | previous hidden window in this frame      |
+| =s-;=          | run a StumpWM command by name (like =M-x=) |
+| =s-:=          | evaluate a Lisp form (like =M-:=)         |
+| =s-!=          | run a shell command (like =M-!=)          |
+| =s-F12=        | take a screenshot                         |
+
+** Keymaps under Super
+
+| key   | keymap                                          |
+|-------+-------------------------------------------------|
+| =s-x= | window and frame management (below)             |
+| =s-l= | program launchers (below)                       |
+| =s-e= | Emacs commands (see [[#known-gaps][Known gaps]])                  |
+| =s-h= | StumpWM's help map                              |
+| =s-t= | StumpWM's root map, the same as the prefix key  |
+| =s-g= | StumpWM's groups map                            |
+
+** =s-x=: windows and frames
+
+| key     | command                                   |
+|---------+-------------------------------------------|
+| =s-x k= | close the window politely                 |
+| =s-x K= | kill the window's client                  |
+| =s-x m= | toggle the mode line                      |
+| =s-x 0= | remove this split (like Emacs =C-x 0=)    |
+| =s-x 1= | make this the only frame (=C-x 1=)        |
+| =s-x 2= | split top and bottom (=C-x 2=)            |
+| =s-x 3= | split side by side (=C-x 3=)              |
+
+** =s-l=: launchers
+
+Each launcher key switches to the program's window if one is open, and
+starts the program if not. The same key in upper case always starts a
+new instance.
+
+| key     | program                       |
+|---------+-------------------------------|
+| =s-l a= | alsamixer, in a terminal      |
+| =s-l p= | pavucontrol                   |
+| =s-l w= | nmtui (Wi-Fi), in a terminal  |
+| =s-l f= | Firefox                       |
+| =s-l m= | Thunderbird                   |
+| =s-l e= | a new Emacs client frame      |
+| =s-l r= | RetroArch                     |
+| =s-l b= | Nyxt                          |
+| =s-l c= | kitty                         |
+| =s-l t= | Ghostty                       |
+| =s-l o= | Konsole                       |
+
+To add a launcher, add one line to =personal-keys.lisp=:
+
+#+begin_src lisp
+  ;; s-l v runs or raises vlc; s-l V always starts a new one.
+  (windowed-app-launcher vlc v)
+#+end_src
+
+Pass =:class= when the program's window class is not its name
+capitalised, =:command-line-args= for arguments, and =:xterm-wrapper t=
+for a terminal program.
+
+** Other keys
+
+| key                          | command                  |
+|------------------------------+--------------------------|
+| =C-' F9=                     | pick new wallpapers      |
+| volume up / down             | volume up / down by 10%  |
+| mute                         | toggle mute              |
+| microphone mute              | toggle the microphone    |
+| brightness up / down         | 5% brighter / dimmer (bb8) |
+| Shift + brightness           | 1% brighter / dimmer (bb8) |
+
+* Groups
+
+StumpWM starts with these groups. The first one, which StumpWM would
+call "Default", is renamed to "Terminal".
+
+Terminal, Emacs, Music, Mail, Boomer, StumpConfig, Nish, Kleevo.
+
+Edit the list in =groups.lisp= to suit your own work.
+
+* Mode line
+
+Every head gets a mode line that reads, left to right:
+
+| field    | shows                                         |
+|----------+-----------------------------------------------|
+| hostname | which machine you are on                      |
+| =%M=     | memory use                                    |
+| =%C=     | CPU use                                       |
+| =%d=     | date and time                                 |
+| =%g=     | groups                                        |
+| =%a=     | how long the mode line itself takes to redraw |
+| =%v=     | windows in the current group                  |
+
+The mode line is redrawn continuously on its own thread, not on a
+timer, so it never lags behind what it is reporting. I added the =%a=
+field to keep an eye on what that costs. Run the =modeline-reset-timings=
+command to start its averages afresh.
+
+The format lives in =*screen-mode-line-format*= in =modeline.lisp=.
+The memory, CPU and hostname fields come from stumpwm-contrib modules.
+
+* Theme
+
+The colours come from the =deepsky= palette in =deepsky.lisp=, my own
+variation on [[https://github.com/dracula/dracula-theme][Dracula]]. My relationship to colour is unique to my
+capacity to perceive it, and where a choice was ambiguous or unknowable
+(by me), I followed the choice made upstream.
+
+=deftheme= turns a palette into a package of named colours, so the
+rest of the configuration refers to colours by name:
+
+#+begin_src lisp
+  (deftheme my-theme
+    (background "#282a36")
+    (foreground "#f8f8f2"))
+  ;; elsewhere: my-theme:background => "#282a36"
+#+end_src
+
+=theme.lisp= sets StumpWM's colour slots (=^0= to =^8= in formatted
+text) from the palette, and colours the message bar, the window borders
+and the mode line.
+
+** Wallpaper
+
+At startup, and whenever you press =C-' F9=, =feh= sets a random image
+on each head, drawn from the directories in =*background-images*= in
+=theme.lisp=. The defaults point at my own collection under
+=~/Desktop_pics/=, so change them before you use this. If the images
+live on a slow or external drive, loading the configuration waits for
+them.
+
+** X resources
+
+I use the Dracula X resources for terminal colours. Clone them, link
+them into place, and load them:
 
 #+begin_src shell
+  git clone https://github.com/dracula/xresources.git ~/dracula-xresources
   ln -s ~/dracula-xresources/Xresources ~/.Xresources
-#+end_src
-
-load it into your current session:
-
-#+begin_src shell
   xrdb -load ~/.Xresources
 #+end_src
 
-when that works, you can put it in your userinit, either like:
+The start script merges =~/.Xresources= at every login.
 
-#+begin_src lisp
-  (stumpwm:run-shell-command "xrdb -load ~/.Xresources")
-#+end_src
+* Volume
 
-or you can (as I do) start stumpwm from a shell script which for me
-handles low level X initialization for multiple heads and window
-manager compositing. I have included my script in this
-repository =start_tumpwm.sh= , but it will require you to edit it to
-match your own system, if only because your heads are not likely to be
-numbered the same as mine. I rely upon several programs and
-services provided by the KDE software distribution, so I call kdeinit5
-here to set up various plumbing resources required by that
-environment. I also use a Corsair K-95 keyboard, the lighting and
-mapping for which are handled by an external application called
-ckb-next. Unless you also have one of these keyboards, you will want
-to kill the call that starts this process. This keyboard, which has
-along the left side a column of 'extra' macro keys, allows me to remap
-several keys, the most important of which is 'G4' which I have mapped
-to a left Super. This is reflected in the heavy use of Super in the
-keybindings defined in this configuration. This is a possible reason
-for you to rethink how all of those Super maps are defined on your system.
+PipeWire has long since replaced PulseAudio, so I moved the volume
+commands onto =wpctl=, PipeWire's own control tool, which is installed
+wherever WirePlumber is. They act on whichever output and input are
+currently the defaults, so they follow you when you switch between
+speakers and headphones. Every change ends by showing the new level,
+such as =Volume: 41% (muted)=.
 
+Besides the media keys, these commands are available from =s-;=:
+
+| command           | effect                                 |
+|-------------------+----------------------------------------|
+| =show-volume=     | show the current volume                |
+| =adjust-volume=   | change the volume by a percentage      |
+| =set-volume=      | set the volume to a percentage         |
+| =toggle-mute=     | mute or unmute                         |
+| =mute=            | mute                                   |
+| =unmute=          | unmute                                 |
+| =show-microphone= | show the microphone level              |
+| =toggle-mic-mute= | mute or unmute the microphone          |
+
+The volume can go as high as 150%. To stop at 100%, set
+=*volume-limit*= to =1.0= in =volume.lisp=. To control a particular
+device instead of the default, set =*volume-sink*= or
+=*microphone-source*= to its ID from =wpctl status=.
+
+If =wpctl= is missing or fails, you get a one-line message on screen,
+not the debugger.
+
+The mixer launchers (=s-l a= for alsamixer, =s-l p= for pavucontrol)
+also work with PipeWire, through its ALSA and PulseAudio compatibility
+layers.
+
+* Live development with Slynk
+
+=init.lisp= starts a Slynk server on port 4007 inside the window
+manager, so you can connect from Emacs with =M-x sly-connect= and change
+StumpWM while it runs. Errors at the top level break into the debugger
+rather than being swallowed, which is what you want while connected.
+
+The SBCL you develop with must be the same build StumpWM was compiled
+with, or the connection fails with confusing errors. Rebuild StumpWM
+with =make install= whenever you upgrade SBCL.
+
+* One configuration, several machines
+
+I run this configuration on more than one machine: =ghost=, a desktop,
+and =bb8=, a laptop. They share almost everything, and each machine's
+differences live in one place per kind of setup, keyed by host name.
+
+- *Lisp:* after the shared configuration loads, =init.lisp= loads
+  =hosts/<name>.lisp= when it exists, where =<name>= is the machine's
+  host name. A machine without one gets only the shared configuration,
+  and the message bar says which happened. =hosts/bb8.lisp= binds the
+  laptop's brightness keys, so a desktop never loads the brightness
+  commands at all.
+- *X setup:* =start_stumpwm.sh= picks the monitor layout by host name.
+  A host it does not list keeps the layout X chose.
+
+To add a machine, run =uname -n= to get its name, add an entry to the
+monitor =case= in =start_stumpwm.sh= if it needs one, and create
+=hosts/<name>.lisp= with a package named =stumpwm-init/hosts/<name>=.
+Model it on =hosts/bb8.lisp=.
+
+For a decision that depends on the kind of machine, not which one,
+=host.lisp= also offers =laptop-p=, and =*host*= names the current
+machine as a keyword such as =:bb8=.
+
+* Adapting it to your machine
+
+=start_stumpwm.sh= describes my machines, so it needs editing before
+it is useful anywhere else:
+
+- The monitor setup has an entry for each of my machines by host name.
+  Add one for yours; run =xrandr= to list your outputs.
+- It starts =picom= for transparency when picom is installed.
+- On a laptop it makes Caps Lock a Control key and swaps the square
+  brackets with the parens on 9 and 0, the same changes my
+  programmable desktop keyboard makes in hardware. Only the built-in
+  keyboard is changed, found by the name in =LAPTOP_KEYBOARD=; run
+  =xinput list= to find yours, or empty the variable to skip this.
+- The commented sections cover a system tray, the GNOME keyring, a
+  touchpad and KDE plumbing. Uncomment the ones you need.
+
+Run =make install-session= after editing it.
+
+* Known gaps
+
+- The =s-e= keymap binds =emacsclient-create-window=,
+  =emacsclient-eval=, =emacsclient-debug= and =emacs-status=, which this
+  configuration does not define. Use =s-l e= for a new Emacs frame.
+
+* Debugging a session that will not start
+
+- If *StumpWM* is missing from the session menu, run =make check=. The
+  login screen hides the entry when =start-stumpwm= is missing.
+- If the session starts and immediately ends, read
+  =~/.local/share/sddm/xorg-session.log= (or your login manager's
+  equivalent). Errors from the start script and from StumpWM land
+  there.
+- To see what the configuration does as it loads, uncomment the two
+  debugging lines at the top of =init.lisp=. They raise StumpWM's debug
+  level and send its output to a file in its data directory.
+- The configuration needs a running X display, so it cannot be tested
+  by loading it into a plain SBCL. Test it in a real session, or in a
+  nested X server such as Xephyr.
