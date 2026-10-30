@@ -87,10 +87,14 @@ out and pick *StumpWM* from the session menu on the login screen.
 | =make install-session= | =start-stumpwm= and the login screen's session entry installed              |
 | =make check=           | a report of what is installed and what is out of date                       |
 | =make clean=           | a clean StumpWM checkout                                                    |
+| =make rebuild=         | a clean build of the binary, installed under =PREFIX=                       |
 
 A second =make= after a successful build does nothing. The build
 reconfigures StumpWM only when its build inputs change, and recompiles
 only when its sources do.
+A new SBCL is not one of those inputs, so after an SBCL upgrade =make=
+leaves the old image in place. Run =make rebuild= then: it cleans the
+StumpWM checkout, reconfigures, builds, and installs the image.
 
 =make link= will not replace a real file or directory in
 =~/.stumpwm.d=. If it refuses, move the file aside yourself and run it

@@ -3,6 +3,8 @@
 #
 #   make            build the stumpwm image in the source checkout
 #   make install    install the image, link the config, install the session
+#   make rebuild    rebuild the image from scratch and install it (after
+#                   an SBCL upgrade)
 #   make check      report whether everything is wired up
 #
 # Every path below can be overridden on the command line, e.g.
@@ -22,7 +24,7 @@ SUDO           ?= sudo
 
 CONFIG_DIR     := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 
-.PHONY: all build install install-stumpwm link install-session check clean
+.PHONY: all build rebuild install install-stumpwm link install-session check clean
 
 all: build
 
@@ -39,6 +41,14 @@ $(STUMPWM_SRC)/Makefile: $(STUMPWM_SRC)/configure $(STUMPWM_SRC)/Makefile.in $(C
 
 build: $(STUMPWM_SRC)/Makefile
 	$(MAKE) -C $(STUMPWM_SRC)
+
+# The image depends only on StumpWM's sources, so a new SBCL leaves
+# make with nothing to do and the old image installed. Start from a
+# clean checkout, rerun configure, then build and install.
+rebuild:
+	if [ -f $(STUMPWM_SRC)/Makefile ]; then $(MAKE) -C $(STUMPWM_SRC) clean; fi
+	rm -f $(STUMPWM_SRC)/Makefile
+	$(MAKE) install-stumpwm
 
 install: install-stumpwm link install-session
 
