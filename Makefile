@@ -75,6 +75,8 @@ install-session:
 	$(SUDO) install -D -m 755 $(CONFIG_DIR)/start_stumpwm.sh $(BINDIR)/start-stumpwm
 	$(SUDO) install -D -m 644 $(CONFIG_DIR)/stumpwm.desktop $(XSESSIONS_DIR)/stumpwm.desktop
 
+# The SBCL runtime answers --version without starting StumpWM. DISPLAY
+# is unset so an image that did start could not reach the X session.
 check:
 	@status=0; \
 	ok()   { echo "  ok    $$1"; }; \
@@ -84,6 +86,13 @@ check:
 		cmp -s $(STUMPWM_SRC)/stumpwm $(BINDIR)/stumpwm \
 			&& ok "installed image matches the build" \
 			|| fail "installed image differs from the build (run make install)"; \
+	fi; \
+	if [ -x $(BINDIR)/stumpwm ]; then \
+		built=$$(env -u DISPLAY $(BINDIR)/stumpwm --version </dev/null 2>/dev/null); \
+		current=$$($(SBCL) --version 2>/dev/null); \
+		if [ -z "$$current" ]; then fail "$(SBCL) does not run, so the image's SBCL cannot be compared"; \
+		elif [ "$$built" = "$$current" ]; then ok "installed image was built with $$current"; \
+		else fail "installed image was built with $${built:-an unknown SBCL}, $(SBCL) is $$current (run make rebuild)"; fi; \
 	fi; \
 	if [ ! -x $(BINDIR)/start-stumpwm ]; then fail "$(BINDIR)/start-stumpwm is missing"; \
 	elif [ -L $(BINDIR)/start-stumpwm ]; then fail "$(BINDIR)/start-stumpwm is a symlink (run make install-session)"; \
