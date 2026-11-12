@@ -49,6 +49,22 @@ case "$(uname -n)" in
 esac
 
 #=============================================================================
+# HYPER KEY
+#=============================================================================
+
+# The desktop keyboard sends F13 from its left Win key. The fade(f13_hyper)
+# symbols in ~/.config/xkb make F13 Hyper_L on Mod3, leaving Super alone on
+# Mod4, so StumpWM reads Mod3 as Hyper. This loads the core keymap, which
+# every keyboard inherits; the laptop block below runs after it and replaces
+# the built-in keyboard's map with its own.
+
+if [ -f "$HOME/.config/xkb/symbols/fade" ]; then
+    setxkbmap -print \
+        | sed '/xkb_symbols/s/"\([^"]*\)"/"\1+fade(f13_hyper)"/' \
+        | xkbcomp -w 0 -I"$HOME/.config/xkb" - "$DISPLAY"
+fi
+
+#=============================================================================
 # LAPTOP KEYBOARD
 #=============================================================================
 
